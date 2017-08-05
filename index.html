@@ -1,0 +1,73 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/fixes.html" as fixes %}
+ 
+{% block content %}
+    <div id="wrap">
+      <div>
+        <div style="float:right; width:250px;">
+            {% if message %}
+                <p>Last action: <span>{{ message }}</span></p>
+            {% endif %}
+        </div>
+        <div>
+            <h3><b>Current bar controller</b></h3>
+        </div>
+            <div>
+              <div>
+                  <div style="float:left;">
+                    Switch all pins:
+                    <a href="/on" role="button">On</a>
+                    <a href="/off" role="button">Off</a>
+                  </div>
+ 
+                  <div style="float:right; width:250px;">
+                       Test-LED
+                            <a href="/7/off" role="button">Off</a>
+                            <a href="/7/on" role="button">On</a>
+                            <a href="/7/toggle" role="button">Toggle</a>
+                  </div>
+ 
+                <table>
+                {% for pin in pins %}
+                    {% if pins[pin].type != "test" %}
+                    <tr>
+                        <td>
+                            <h4>{{ pins[pin].name }}</h4>
+                        </td>
+                        <!-- Status-->
+                        <td>
+                            {% if pins[pin].state == true %}
+                                Current state: <span>On</span>
+                            {% else %}
+                                Current state: <span>Off</span>
+                            {% endif %}
+                        </td>
+                        <!-- Button for action-->
+                        <td>
+                           {% if pins[pin].state == true %}
+                                <a href="/{{pin}}/on" role="button" disabled="disabled">On</a>
+                                <a href="/{{pin}}/off" role="button">Off</a>
+                                <a href="/{{pin}}/reset" role="button">Reset</a>
+                           {% else %}
+                                <a href="/{{pin}}/on" role="button">On</a>
+                                <a href="/{{pin}}/off" role="button" disabled="disabled">Off</a>
+                                <a href="/{{pin}}/reset" role="button" disabled="disabled">Reset</a>
+                           {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                </table>
+              </div>
+            </div>
+          </div>
+        <div>
+        <small><p>&copy; <a href="http://affolter-engineering.ch">Affolter Engineering</a> 2014</p></small>
+    </div>
+{% endblock %}
+ 
+{% block head %}
+{{super()}}
+{{fixes.ie8()}}
+{% endblock %}
