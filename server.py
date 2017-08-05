@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+import pyA20.gpio as gpio
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
 from flask_appconfig import AppConfig
@@ -9,21 +9,21 @@ def create_app(configfile='server.cfg'):
     AppConfig(app, configfile)
     app.debug = app.config['DEBUG']
     Bootstrap(app)
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
+    gpio.setmode(gpio.BCM)
+    gpio.setwarnings(False)
 
     # Grab all pins from the configuration file
     pins = app.config['PINS']
     # Set each pin as an output and make it low
     for pin in pins:
-        GPIO.setup(pin, GPIO.OUT)
-        GPIO.output(pin, GPIO.LOW)
+        gpio.setup(pin, gpio.OUT)
+        gpio.output(pin, gpio.LOW)
 
     @app.route('/')
     def index():
         # For each pin, read the pin state and store it in the pins dictionary
         for pin in pins:
-            pins[pin]['state'] = GPIO.input(pin)
+            pins[pin]['state'] = gpio.input(pin)
         # Put the pin dictionary into the template data dictionary
         templateData = {
             'pins' : pins
@@ -37,16 +37,16 @@ def create_app(configfile='server.cfg'):
         if master == 'on':
             # Set all pins to high
             for pin in pins:
-                GPIO.output(pin, GPIO.HIGH)
+                gpio.output(pin, gpio.HIGH)
             message = 'Turned all interfaces on.'
         if master == 'off':
             # Set all pins to low
             for pin in pins:
-                GPIO.output(pin, GPIO.LOW)
+                gpio.output(pin, gpio.LOW)
             message = 'Turned all interfaces off.'
         # For each pin, read the pin state and store it in the pins dictionary
         for pin in pins:
-            pins[pin]['state'] = GPIO.input(pin)
+            pins[pin]['state'] = gpio.input(pin)
         # Along with the pin dictionary, put the message into the template data dictionary
         templateData = {
                         'message' : message,
@@ -65,25 +65,25 @@ def create_app(configfile='server.cfg'):
         # If the action part of the URL is "on," execute the code indented below
         if action == 'on':
             # Set the pin high
-            GPIO.output(changePin, GPIO.HIGH)
+            gpio.output(changePin, gpio.HIGH)
             # Save the status message to be passed into the template
             message = 'Turned ' + deviceName + ' on.'
         if action == 'off':
-            GPIO.output(changePin, GPIO.LOW)
+            gpio.output(changePin, gpio.LOW)
             message = 'Turned ' + deviceName + ' off.'
         if action == 'toggle':
             # Read the pin and set it to whatever it isn't (that is, toggle it)
-            GPIO.output(changePin, not GPIO.input(changePin))
+            gpio.output(changePin, not gpio.input(changePin))
             message = 'Toggled ' + deviceName + '.'
         if action == 'reset':
             # Set the pin to low and after 5 s back to high
-            GPIO.output(changePin, GPIO.LOW)
+            gpio.output(changePin, gpio.LOW)
             time.sleep(5)
-            GPIO.output(changePin, GPIO.HIGH)
+            gpio.output(changePin, gpio.HIGH)
             message = 'Reset ' + deviceName + '.'
         # For each pin, read the pin state and store it in the pins dictionary
         for pin in pins:
-            pins[pin]['state'] = GPIO.input(pin)
+            pins[pin]['state'] = gpio.input(pin)
         templateData = {
                         'message' : message,
                         'pins' : pins
